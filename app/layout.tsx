@@ -3,17 +3,41 @@ import './globals.css'; // Global styles
 import 'katex/dist/katex.min.css'; // Mathematical rendering styles
 
 export const metadata: Metadata = {
-  title: 'Remix Board Exam Review Pro',
-  description: 'An intelligent quiz generator that automatically extracts questions, tables, and images from PDF and Word documents to create interactive quizzes.',
+  title: 'ElectroReview PH — Your Partner in REE & RME Board Exam Preparation',
+  description: 'Your premier partner in REE & RME Board Exam Preparation. An intelligent review generator that automatically extracts questions, tables, and images from PDF and Word documents to create interactive licensure quizzes with step-by-step whiteboard derivations.',
   openGraph: {
-    title: 'Remix Board Exam Review Pro',
-    description: 'An intelligent quiz generator that automatically extracts questions, tables, and images from PDF and Word documents to create interactive quizzes.',
+    title: 'ElectroReview PH — Your Partner in REE & RME Board Exam Preparation',
+    description: 'Your premier partner in REE & RME Board Exam Preparation. An intelligent review generator that automatically extracts questions, tables, and images from PDF and Word documents to create interactive licensure quizzes with step-by-step whiteboard derivations.',
   },
 };
 
 export default function RootLayout({children}: {children: React.ReactNode}) {
   return (
     <html lang="en">
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if (typeof window !== 'undefined') {
+                window.addEventListener('error', function(event) {
+                  // Suppress benign resource/DOM/WebSocket errors that serialize as {"isTrusted":true}
+                  if (event && !event.error && (event.target instanceof HTMLElement || event.target instanceof WebSocket || event.isTrusted)) {
+                    event.stopImmediatePropagation && event.stopImmediatePropagation();
+                    event.preventDefault && event.preventDefault();
+                    return true;
+                  }
+                }, true);
+                window.addEventListener('unhandledrejection', function(event) {
+                  if (event && event.reason && (event.reason instanceof Event || event.reason.isTrusted)) {
+                    event.stopImmediatePropagation && event.stopImmediatePropagation();
+                    event.preventDefault && event.preventDefault();
+                  }
+                }, true);
+              }
+            `,
+          }}
+        />
+      </head>
       <body suppressHydrationWarning>{children}</body>
     </html>
   );

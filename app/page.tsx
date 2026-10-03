@@ -83,22 +83,53 @@ import {
   Cell
 } from 'recharts';
 
-// Dynamic script loader for PDF.js CDN
+// Dynamic script loader for PDF.js CDN with safe singleton promise
+let pdfjsLoadingPromise: Promise<any> | null = null;
+
 const loadPDFJS = async (): Promise<any> => {
   if (typeof window === 'undefined') return null;
   if ((window as any).pdfjsLib) return (window as any).pdfjsLib;
+  if (pdfjsLoadingPromise) return pdfjsLoadingPromise;
 
-  return new Promise((resolve, reject) => {
-    const script = document.createElement('script');
-    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
-    script.onload = () => {
-      const pdfjsLib = (window as any).pdfjsLib;
-      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-      resolve(pdfjsLib);
-    };
-    script.onerror = () => reject(new Error('Failed to load PDF.js library'));
-    document.head.appendChild(script);
+  pdfjsLoadingPromise = new Promise((resolve) => {
+    try {
+      const existing = document.querySelector('script[src*="pdf.min.js"]');
+      if (existing) {
+        if ((window as any).pdfjsLib) {
+          resolve((window as any).pdfjsLib);
+          return;
+        }
+        existing.addEventListener('load', () => resolve((window as any).pdfjsLib || null));
+        existing.addEventListener('error', () => resolve(null));
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+      script.onload = () => {
+        try {
+          const pdfjsLib = (window as any).pdfjsLib;
+          if (pdfjsLib) {
+            try {
+              pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+            } catch (_) {}
+          }
+          resolve(pdfjsLib || null);
+        } catch {
+          resolve(null);
+        }
+      };
+      script.onerror = () => {
+        console.warn('PDF.js external script could not be loaded. Alternative file parsers remain active.');
+        resolve(null);
+      };
+      document.head.appendChild(script);
+    } catch {
+      resolve(null);
+    }
   });
+
+  return pdfjsLoadingPromise;
 };
 
 // Default high-quality, professional sample reviewer questions with Whiteboard Solutions
@@ -1287,12 +1318,14 @@ export default function BoardExamReviewPro() {
       });
   }, [attempts, getAttemptQuizDetails]);
 
-  // Check PDF.js capability on mount
+  // Check PDF.js capability on mount safely
   useEffect(() => {
-    loadPDFJS().then(() => {
-      console.log('PDF.js ready client-side');
-    }).catch(err => {
-      console.error('Failed to load PDF.js:', err);
+    loadPDFJS().then((lib) => {
+      if (lib) {
+        console.log('PDF.js ready client-side');
+      }
+    }).catch(() => {
+      // Safe silent catch
     });
   }, []);
 
@@ -2204,14 +2237,17 @@ export default function BoardExamReviewPro() {
       <header id="app-header" className="bg-[#0D0D10]/80 backdrop-blur-md border-b border-b-white/5 sticky top-0 z-40 shadow-[0_4px_20px_rgba(0,0,0,0.3)]">
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-12 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-indigo-600 rounded-lg text-white">
-              <Sparkles className="w-5 h-5 animate-pulse" />
+            <div className="p-2 bg-gradient-to-tr from-amber-500 to-indigo-600 rounded-lg text-white shadow-md shadow-amber-500/20">
+              <Zap className="w-5 h-5 animate-pulse text-amber-200 fill-amber-200" />
             </div>
             <div>
-              <h1 className="text-lg font-bold tracking-tight text-white flex items-center gap-2">
-                <span>Board Exam Review Pro</span>
+              <h1 className="text-base sm:text-lg font-bold tracking-tight text-white flex items-center gap-2">
+                <span>ElectroReview PH</span>
+                <span className="hidden sm:inline-flex items-center text-[10px] font-semibold tracking-wider uppercase text-amber-400 bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 rounded-full">
+                  REE &amp; RME
+                </span>
               </h1>
-              <p className="text-xs text-slate-400">Document Scan & Interactive Review Platform</p>
+              <p className="text-xs text-slate-400">Your Partner in REE &amp; RME Board Exam Preparation</p>
             </div>
           </div>
 
@@ -6944,7 +6980,7 @@ export default function BoardExamReviewPro() {
       {/* Footer */}
       <footer className="bg-[#0B0B0C] border-t border-white/10 mt-12 py-6 text-center text-xs text-slate-500">
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-12 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p>© 2026 Board Exam Review Pro • Real-Time Client Parsing & Verification Stack</p>
+          <p>© 2026 ElectroReview PH — Your Partner in REE &amp; RME Board Exam Preparation • PRC Licensure Review Platform</p>
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />

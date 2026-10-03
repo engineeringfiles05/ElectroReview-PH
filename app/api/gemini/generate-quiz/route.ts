@@ -760,7 +760,7 @@ Document Content to Scan:
     console.error('Error generating quiz:', error);
     return NextResponse.json({
       success: false,
-      error: 'Board Exam Review Pro generation notice: ' + (error.message || error),
+      error: 'ElectroReview PH generation notice: ' + (error.message || error),
     });
   }
 }
