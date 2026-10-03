@@ -48,14 +48,21 @@ export function LoginSection({
   const [activeTab, setActiveTab] = useState<'login' | 'register'>('login');
 
   // Form Fields - Login
-  const [loginEmail, setLoginEmail] = useState<string>(() => {
-    return safeLocalStorageGet('electroreview_remembered_email', '') || '';
-  });
+  const [loginEmail, setLoginEmail] = useState<string>('');
   const [loginPassword, setLoginPassword] = useState('');
   const [showLoginPassword, setShowLoginPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(() => {
-    return safeLocalStorageGet('electroreview_remember_me', 'true') === 'true';
-  });
+  const [rememberMe, setRememberMe] = useState(true);
+
+  React.useEffect(() => {
+    const rememberedEmail = safeLocalStorageGet('electroreview_remembered_email', '');
+    if (rememberedEmail) {
+      setLoginEmail(rememberedEmail);
+    }
+    const rememberedPref = safeLocalStorageGet('electroreview_remember_me', 'true');
+    if (rememberedPref !== null) {
+      setRememberMe(rememberedPref === 'true');
+    }
+  }, []);
 
   // Form Fields - Register
   const [regName, setRegName] = useState('');

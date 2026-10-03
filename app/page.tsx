@@ -384,30 +384,13 @@ export default function BoardExamReviewPro() {
   const [activeMode, setActiveMode] = useState<'list' | 'take' | 'edit' | 'extract' | 'history' | 'calendar' | 'login'>('list');
   const [libraryTab, setLibraryTab] = useState<'dashboard' | 'quizzes'>('dashboard');
   
-  // Reviewee Account & Authentication state
-  const [currentUser, setCurrentUser] = useState<RevieweeUser | null>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = safeLocalStorageGet('electroreview_user', null);
-      if (saved) {
-        try {
-          return JSON.parse(saved);
-        } catch (_) {
-          return null;
-        }
-      }
-    }
-    return null;
-  });
+  // Reviewee Account & Authentication state (hydrated on client mount)
+  const [currentUser, setCurrentUser] = useState<RevieweeUser | null>(null);
   const [showLoginModal, setShowLoginModal] = useState<boolean>(false);
+  const [isMounted, setIsMounted] = useState<boolean>(false);
 
-  // User Role Configuration (Admin vs Member)
-  const [userRole, setUserRole] = useState<'admin' | 'member'>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = safeLocalStorageGet('review_user_role');
-      if (saved === 'admin' || saved === 'member') return saved;
-    }
-    return 'admin'; // default to admin so they see all controls immediately
-  });
+  // User Role Configuration (Admin vs Member - defaults to admin, hydrated on client mount)
+  const [userRole, setUserRole] = useState<'admin' | 'member'>('admin');
 
   // Reviewee Login & Logout Callbacks
   const handleLoginSuccess = (user: RevieweeUser) => {
@@ -476,13 +459,8 @@ export default function BoardExamReviewPro() {
     badgeIcon: 'gold' | 'silver' | 'bronze' | 'streak' | 'perfection' | 'speed' | 'milestone';
   } | null>(null);
 
-  // Instant Feedback Mode states
-  const [showInstantFeedback, setShowInstantFeedback] = useState<boolean>(() => {
-    if (typeof window !== 'undefined') {
-      return safeLocalStorageGet('quiz_show_instant_feedback') === 'true';
-    }
-    return false;
-  });
+  // Instant Feedback Mode states (hydrated on client mount)
+  const [showInstantFeedback, setShowInstantFeedback] = useState<boolean>(false);
 
   // Quiz Results & Board Exam Review States
   const [reviewFilter, setReviewFilter] = useState<'all' | 'incorrect' | 'correct' | 'unanswered'>('all');
@@ -714,10 +692,34 @@ export default function BoardExamReviewPro() {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Initialize and load quizzes from local storage
+  // Initialize and load quizzes and client persistent state from local storage
   useEffect(() => {
+    setIsMounted(true);
     if (typeof window !== 'undefined') {
       cleanupLegacyStorageKeys();
+
+      // Safely hydrate user authentication & role on client mount
+      const savedRole = safeLocalStorageGet('review_user_role');
+      if (savedRole === 'admin' || savedRole === 'member') {
+        setUserRole(savedRole);
+      }
+
+      const savedUser = safeLocalStorageGet('electroreview_user', null);
+      if (savedUser) {
+        try {
+          const parsed = JSON.parse(savedUser);
+          setCurrentUser(parsed);
+          if (parsed.role) {
+            setUserRole(parsed.role);
+          }
+        } catch (_) {}
+      }
+
+      const savedFeedback = safeLocalStorageGet('quiz_show_instant_feedback');
+      if (savedFeedback === 'true') {
+        setShowInstantFeedback(true);
+      }
+
       let stored = safeLocalStorageGet('board_exam_review_pro_quizzes');
       if (!stored) {
         stored = safeLocalStorageGet('electrical_review_pro_quizzes') || safeLocalStorageGet('ai_quiz_generator_quizzes'); // migration
