@@ -50,12 +50,16 @@ import {
   Zap,
   Star,
   Info,
-  ChevronDown
+  ChevronDown,
+  LogIn,
+  LogOut,
+  User
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { QuestionType, Question, Quiz, QuizAttempt, ExtractionLog, ScheduledQuiz } from '@/lib/types';
+import { QuestionType, Question, Quiz, QuizAttempt, ExtractionLog, ScheduledQuiz, RevieweeUser } from '@/lib/types';
 import { MathRenderer } from '@/components/MathRenderer';
 import { ExplanationVisualizer } from '@/components/ExplanationVisualizer';
+import { LoginSection } from '@/components/LoginSection';
 import { parseQuestionsDeterministically } from '@/lib/deterministicParser';
 import {
   safeLocalStorageGet,
@@ -377,9 +381,25 @@ export default function BoardExamReviewPro() {
   // Application states
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
   const [selectedQuiz, setSelectedQuiz] = useState<Quiz | null>(null);
-  const [activeMode, setActiveMode] = useState<'list' | 'take' | 'edit' | 'extract' | 'history' | 'calendar'>('list');
+  const [activeMode, setActiveMode] = useState<'list' | 'take' | 'edit' | 'extract' | 'history' | 'calendar' | 'login'>('list');
   const [libraryTab, setLibraryTab] = useState<'dashboard' | 'quizzes'>('dashboard');
   
+  // Reviewee Account & Authentication state
+  const [currentUser, setCurrentUser] = useState<RevieweeUser | null>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = safeLocalStorageGet('electroreview_user', null);
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch (_) {
+          return null;
+        }
+      }
+    }
+    return null;
+  });
+  const [showLoginModal, setShowLoginModal] = useState<boolean>(false);
+
   // User Role Configuration (Admin vs Member)
   const [userRole, setUserRole] = useState<'admin' | 'member'>(() => {
     if (typeof window !== 'undefined') {
@@ -388,6 +408,21 @@ export default function BoardExamReviewPro() {
     }
     return 'admin'; // default to admin so they see all controls immediately
   });
+
+  // Reviewee Login & Logout Callbacks
+  const handleLoginSuccess = (user: RevieweeUser) => {
+    setCurrentUser(user);
+    setUserRole(user.role);
+    safeLocalStorageSet('review_user_role', user.role);
+    setShowLoginModal(false);
+    showToast(`Welcome back, ${user.name}! Ready for REE & RME board practice.`, 'success');
+  };
+
+  const handleLogout = () => {
+    setCurrentUser(null);
+    safeLocalStorageRemove('electroreview_user');
+    showToast('Signed out of reviewee account.', 'info');
+  };
 
   // Calendar & Scheduling States
   const [scheduledQuizzes, setScheduledQuizzes] = useState<ScheduledQuiz[]>([]);
@@ -2268,6 +2303,54 @@ export default function BoardExamReviewPro() {
               </div>
             </div>
 
+            {/* Reviewee Portal / Candidate Login CTA */}
+            {currentUser ? (
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveMode('login');
+                    setSelectedQuiz(null);
+                  }}
+                  className="flex items-center gap-2 px-2.5 py-1.5 bg-gradient-to-r from-amber-500/15 to-indigo-500/15 hover:from-amber-500/25 hover:to-indigo-500/25 border border-amber-500/30 rounded-xl transition-all cursor-pointer group"
+                >
+                  <div className="w-6 h-6 rounded-lg bg-amber-500 text-slate-950 font-black text-[11px] flex items-center justify-center shrink-0">
+                    {currentUser.name.charAt(0)}
+                  </div>
+                  <div className="text-left hidden md:block">
+                    <span className="block text-xs font-bold text-white group-hover:text-amber-300 transition-colors leading-tight truncate max-w-[120px]">
+                      {currentUser.name.split(' ')[0]}
+                    </span>
+                    <span className="block text-[9px] font-semibold text-amber-400 leading-none">
+                      {currentUser.track} Candidate
+                    </span>
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  title="Sign Out of Candidate Account"
+                  className="p-1.5 sm:p-2 text-slate-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-xl transition-all border border-transparent hover:border-rose-500/20 cursor-pointer"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveMode('login');
+                  setSelectedQuiz(null);
+                }}
+                className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1.5 sm:py-2 bg-gradient-to-r from-amber-500 via-amber-600 to-indigo-600 hover:from-amber-400 hover:to-indigo-500 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl transition-all shadow-md shadow-amber-500/20 cursor-pointer"
+              >
+                <LogIn className="w-3.5 h-3.5 stroke-[2.5]" />
+                <span className="hidden xs:inline">Reviewee Login</span>
+                <span className="xs:hidden">Login</span>
+              </button>
+            )}
+
             {/* Role Switcher */}
             <div className="flex items-center gap-1 bg-white/5 border border-white/10 rounded-xl p-1 text-xs">
               <button
@@ -2491,6 +2574,23 @@ export default function BoardExamReviewPro() {
             <History className="w-4 h-4" />
             <span>Scores ({attempts.length})</span>
           </button>
+
+          <button
+            onClick={() => {
+              setActiveMode('login');
+              setSelectedQuiz(null);
+              setSelectedAttemptId(null);
+            }}
+            className={cn(
+              "flex-1 flex flex-col items-center justify-center gap-1 py-2 px-0.5 rounded-xl text-[10px] font-bold tracking-wide transition-all",
+              activeMode === 'login'
+                ? "bg-amber-500 text-slate-950 font-extrabold shadow-[0_4px_12px_rgba(245,158,11,0.25)]"
+                : "text-slate-400 hover:text-slate-200 hover:bg-white/5"
+            )}
+          >
+            <User className="w-4 h-4" />
+            <span>{currentUser ? `${currentUser.track} Portal` : 'Login'}</span>
+          </button>
         </div>
 
         {/* Dashboard Workstation Grid */}
@@ -2500,25 +2600,64 @@ export default function BoardExamReviewPro() {
           {(activeMode !== 'take' && activeMode !== 'edit') && (
             <div className="lg:col-span-3 flex flex-col gap-6 order-last lg:order-first">
               
-              {/* Account and Role Information */}
+              {/* Account and Candidate Information */}
               <div className="bg-[#111115] border border-white/[0.06] rounded-2xl p-5 shadow-xl flex flex-col gap-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-indigo-600 rounded-full flex items-center justify-center text-white text-xs font-black shadow-lg">
-                    AP
+                {currentUser ? (
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-amber-500 rounded-full flex items-center justify-center text-slate-950 text-xs font-black shadow-lg">
+                      {currentUser.name.charAt(0)}
+                    </div>
+                    <div className="min-w-0 flex-grow">
+                      <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider block">
+                        {currentUser.track} Candidate
+                      </span>
+                      <span className="text-xs font-bold text-white block truncate" title={currentUser.name}>
+                        {currentUser.name}
+                      </span>
+                      <span className="text-[10px] text-slate-400 block truncate" title={currentUser.email}>
+                        {currentUser.email}
+                      </span>
+                    </div>
                   </div>
-                  <div className="min-w-0 flex-grow">
-                    <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-wider block">Member Account</span>
-                    <span className="text-xs font-bold text-white block truncate" title="angeloperfecto.epc@gmail.com">
-                      angeloperfecto.epc@gmail.com
-                    </span>
+                ) : (
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-9 h-9 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400">
+                        <User className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+                          Reviewee Portal
+                        </span>
+                        <span className="text-xs font-bold text-white block">
+                          Guest Candidate
+                        </span>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setActiveMode('login');
+                        setSelectedQuiz(null);
+                      }}
+                      className="px-2.5 py-1 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-[10px] uppercase rounded-lg transition-all cursor-pointer"
+                    >
+                      Login
+                    </button>
                   </div>
-                </div>
+                )}
                 
                 <div className="bg-white/[0.02] border border-white/5 p-3 rounded-xl flex flex-col gap-1.5 text-xs text-slate-400">
                   <div className="flex items-center justify-between">
                     <span>Role Level:</span>
                     <span className="font-extrabold uppercase text-indigo-300 text-[10px] px-1.5 py-0.5 bg-indigo-500/10 border border-indigo-500/20 rounded">
                       {userRole}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span>Review Track:</span>
+                    <span className="font-extrabold text-amber-400 text-[10px]">
+                      {currentUser ? currentUser.track : 'REE & RME'}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
@@ -2529,6 +2668,32 @@ export default function BoardExamReviewPro() {
                     </span>
                   </div>
                 </div>
+
+                {currentUser ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveMode('login');
+                      setSelectedQuiz(null);
+                    }}
+                    className="w-full py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-xs font-semibold text-slate-300 hover:text-white transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                  >
+                    <User className="w-3.5 h-3.5 text-amber-400" />
+                    <span>Candidate Profile &amp; Stats</span>
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveMode('login');
+                      setSelectedQuiz(null);
+                    }}
+                    className="w-full py-2 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 rounded-xl text-xs font-bold text-amber-300 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                  >
+                    <LogIn className="w-3.5 h-3.5" />
+                    <span>Sign In to Candidate Portal</span>
+                  </button>
+                )}
 
                 {/* System Notifications / Announcements Board */}
                 <div className="border-t border-white/5 pt-3 mt-1">
@@ -2767,6 +2932,29 @@ export default function BoardExamReviewPro() {
             (activeMode !== 'take' && activeMode !== 'edit') ? "lg:col-span-9 animate-fade-in" : "lg:col-span-12 animate-fade-in"
           )}>
             
+            {/* MODE 0: LOGIN & REVIEWEE PORTAL */}
+            {activeMode === 'login' && (
+              <motion.div
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="w-full"
+              >
+                <LoginSection
+                  currentUser={currentUser}
+                  onLoginSuccess={handleLoginSuccess}
+                  onLogout={handleLogout}
+                  onNavigateToQuiz={() => {
+                    setActiveMode('list');
+                    setSelectedQuiz(null);
+                  }}
+                  onClose={() => {
+                    setActiveMode('list');
+                    setSelectedQuiz(null);
+                  }}
+                />
+              </motion.div>
+            )}
+
             {/* MODE 1: UPLOAD & GENERATOR SETTINGS */}
             {activeMode === 'extract' && (
               <motion.div
@@ -6978,6 +7166,38 @@ export default function BoardExamReviewPro() {
                 Delete Quiz
               </button>
             </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Quick Login Modal Overlay */}
+      {showLoginModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
+          <motion.div
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.95, opacity: 0 }}
+            className="w-full max-w-xl my-8 relative"
+          >
+            <div className="absolute top-4 right-4 z-20">
+              <button
+                type="button"
+                onClick={() => setShowLoginModal(false)}
+                className="w-8 h-8 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center border border-white/20 transition-all cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+            <LoginSection
+              currentUser={currentUser}
+              onLoginSuccess={handleLoginSuccess}
+              onLogout={handleLogout}
+              onNavigateToQuiz={() => {
+                setShowLoginModal(false);
+                setActiveMode('list');
+              }}
+              onClose={() => setShowLoginModal(false)}
+            />
           </motion.div>
         </div>
       )}

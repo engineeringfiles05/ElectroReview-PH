@@ -107,3 +107,16 @@ export interface ExtractionLog {
   questionsFound: number;
   error?: string | null;
 }
+
+export interface RevieweeUser {
+  id: string;
+  name: string;
+  email: string;
+  track: 'REE' | 'RME' | 'BOTH';
+  targetExamBatch: string;
+  role: 'member' | 'admin';
+  joinedDate: string;
+  streakDays: number;
+  solvedQuestionsCount: number;
+  schoolOrReviewCenter?: string;
+}

@@ -1,12 +1,13 @@
 // Safe, quota-aware Local Storage utility with automatic fallback and compaction
 
-export function safeLocalStorageGet(key: string): string | null {
-  if (typeof window === 'undefined') return null;
+export function safeLocalStorageGet(key: string, fallback: string | null = null): string | null {
+  if (typeof window === 'undefined') return fallback;
   try {
-    return localStorage.getItem(key);
+    const val = localStorage.getItem(key);
+    return val !== null ? val : fallback;
   } catch (e) {
     console.error(`[Storage] Error reading key "${key}":`, e);
-    return null;
+    return fallback;
   }
 }
 
