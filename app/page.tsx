@@ -2275,7 +2275,7 @@ export default function BoardExamReviewPro() {
   if (!isMounted) {
     return (
       <div className="min-h-screen bg-[#0A0A0B] flex flex-col items-center justify-center p-6 text-center select-none font-sans">
-        <div className="w-16 h-16 bg-white rounded-2xl p-1.5 shadow-2xl border border-white/20 mb-4 flex items-center justify-center">
+        <div className="w-16 h-16 bg-black rounded-2xl p-1 shadow-2xl border border-white/20 mb-4 flex items-center justify-center">
           <img src="/logo.png" alt="ElectroReview PH" className="w-full h-full object-contain rounded-xl" />
         </div>
         <div className="flex items-center gap-2 text-amber-400 font-bold text-sm tracking-wider uppercase mb-1">
@@ -2295,7 +2295,7 @@ export default function BoardExamReviewPro() {
         <header className="bg-[#0D0D10]/80 backdrop-blur-md border-b border-b-white/5 sticky top-0 z-40">
           <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-12 h-16 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="relative w-9 h-9 rounded-xl overflow-hidden bg-white shadow-md border border-white/20 flex items-center justify-center p-0.5 shrink-0">
+              <div className="relative w-9 h-9 rounded-xl overflow-hidden bg-black shadow-md border border-white/20 flex items-center justify-center p-0.5 shrink-0">
                 <img
                   src="/logo.png"
                   alt="ElectroReview PH"
@@ -2346,7 +2346,7 @@ export default function BoardExamReviewPro() {
               <img
                 src="/logo.png"
                 alt="ElectroReview PH"
-                className="w-7 h-7 rounded-md object-contain bg-white p-0.5"
+                className="w-7 h-7 rounded-md object-contain bg-black border border-white/10 p-0.5"
                 referrerPolicy="no-referrer"
               />
               <p>© 2026 ElectroReview PH — Your Partner in REE &amp; RME Board Exam Preparation • PRC Licensure Review Platform</p>
@@ -2369,7 +2369,7 @@ export default function BoardExamReviewPro() {
       <header id="app-header" className="bg-[#0D0D10]/80 backdrop-blur-md border-b border-b-white/5 sticky top-0 z-40 shadow-[0_4px_20px_rgba(0,0,0,0.3)]">
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-12 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="relative w-10 h-10 rounded-xl overflow-hidden bg-white shadow-md shadow-amber-500/10 border border-white/20 flex items-center justify-center p-0.5 shrink-0">
+            <div className="relative w-10 h-10 rounded-xl overflow-hidden bg-black shadow-md border border-white/20 flex items-center justify-center p-0.5 shrink-0">
               <img
                 src="/logo.png"
                 alt="ElectroReview PH Official Logo"
@@ -7306,7 +7306,7 @@ export default function BoardExamReviewPro() {
             <img
               src="/logo.png"
               alt="ElectroReview PH"
-              className="w-7 h-7 rounded-md object-contain bg-white p-0.5"
+              className="w-7 h-7 rounded-md object-contain bg-black border border-white/10 p-0.5"
               referrerPolicy="no-referrer"
             />
             <p>© 2026 ElectroReview PH — Your Partner in REE &amp; RME Board Exam Preparation • PRC Licensure Review Platform</p>

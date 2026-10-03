@@ -1,46 +1,71 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" fill="none">
-  <defs>
-    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#0F172A" />
-      <stop offset="100%" stop-color="#090D16" />
-    </linearGradient>
-    <linearGradient id="bolt-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#FDE047" />
-      <stop offset="50%" stop-color="#F59E0B" />
-      <stop offset="100%" stop-color="#D97706" />
-    </linearGradient>
-    <linearGradient id="border-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.8" />
-      <stop offset="50%" stop-color="#6366F1" stop-opacity="0.4" />
-      <stop offset="100%" stop-color="#3B82F6" stop-opacity="0.8" />
-    </linearGradient>
-    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur stdDeviation="2" result="blur" />
-      <feComposite in="SourceGraphic" in2="blur" operator="over" />
-    </filter>
-  </defs>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <!-- Solid Black Background -->
+  <rect width="1024" height="1024" fill="#000000" />
 
-  <!-- Container Squircle Background -->
-  <rect x="2" y="2" width="60" height="60" rx="16" fill="url(#bg-grad)" stroke="url(#border-grad)" stroke-width="2.5" />
+  <g fill="#FFFFFF">
+    <!-- LETTER E -->
+    <!-- Continuous straight diagonal on left: from (195, 620) to (370, 230) -->
+    <!-- Continuous parallel diagonal facing bolt on right: X_right = X_left + bar_width -->
+    <!-- Slant vector: dx = 0.45 * dy -->
+    <path d="
+      M 370 230
+      L 542 230
+      L 508 308
+      L 348 308
+      L 315 385
+      L 470 385
+      L 438 460
+      L 282 460
+      L 248 542
+      L 418 542
+      L 384 620
+      L 195 620
+      Z
+    " />
 
-  <!-- Circuit Trace Accents -->
-  <circle cx="16" cy="18" r="2" fill="#F59E0B" opacity="0.6" />
-  <line x1="16" y1="18" x2="22" y2="18" stroke="#F59E0B" stroke-width="1.2" opacity="0.4" />
-  
-  <circle cx="48" cy="46" r="2" fill="#6366F1" opacity="0.6" />
-  <line x1="42" y1="46" x2="48" y2="46" stroke="#6366F1" stroke-width="1.2" opacity="0.4" />
+    <!-- LIGHTNING BOLT -->
+    <!-- Left edge is a clean straight diagonal from top to bottom tip! -->
+    <!-- Top-left: (564, 230) down to Tip: (432, 620) [dx = 132, slope dy/dx = 390/132 ≈ 2.95] -->
+    <!-- Upper-right edge: from (620, 230) down to inner corner at (525, 400) -->
+    <!-- Horizontal shelf: from (525, 400) out to (622, 400) -->
+    <!-- Lower-right diagonal: from (622, 400) down-left to Tip at (432, 620) -->
+    <path d="
+      M 564 230
+      L 432 620
+      L 624 400
+      L 526 400
+      L 620 230
+      Z
+    " />
 
-  <!-- Electric Bolt with Glow -->
-  <path 
-    d="M34 8L18 34H31L26 56L46 28H33L38 8H34Z" 
-    fill="url(#bolt-grad)" 
-    filter="url(#glow)"
-  />
-  
-  <!-- Highlight facet -->
-  <path 
-    d="M34 8L24 28H33L26 56L34 32H27L38 8H34Z" 
-    fill="#FFFFFF" 
-    opacity="0.3"
-  />
+    <!-- LETTER R -->
+    <!-- Upper loop: starts facing bolt upper right, curves 180 deg around to right, loops back -->
+    <!-- Lower leg: starts below loop, slants down-right parallel to bolt lower-right, ends flat on baseline -->
+    <path fill-rule="evenodd" d="
+      M 642 230
+      L 772 230
+      C 828 230, 866 268, 866 325
+      C 866 382, 828 420, 772 420
+      L 646 420
+      L 746 620
+      L 862 620
+      L 760 416
+      C 804 404, 832 370, 832 325
+      C 832 284, 804 256, 762 256
+      L 654 256
+      Z
+    " />
+  </g>
+
+  <!-- TYPOGRAPHY: ElectroReview PH -->
+  <text 
+    x="512" 
+    y="728" 
+    font-family="Liberation Sans, Inter, Montserrat, Arial, sans-serif" 
+    font-size="82" 
+    font-weight="900" 
+    letter-spacing="-1.5" 
+    text-anchor="middle" 
+    fill="#FFFFFF"
+  >ElectroReview PH</text>
 </svg>

@@ -282,7 +282,7 @@ export function LoginSection({
           {/* Header with Official Logo */}
           <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-6 pb-8 border-b border-white/10 relative z-10">
             <div className="flex items-center gap-5">
-              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-2xl p-1.5 shadow-xl border border-white/20 shrink-0 flex items-center justify-center">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-black rounded-2xl p-1 shadow-xl border border-white/20 shrink-0 flex items-center justify-center">
                 <img
                   src="/logo.png"
                   alt="ElectroReview PH Official Logo"
@@ -436,7 +436,7 @@ export function LoginSection({
 
           {/* Official Brand Logo */}
           <div className="inline-block relative mb-3">
-            <div className="w-20 h-20 sm:w-24 sm:h-24 bg-white rounded-2xl p-2 shadow-2xl shadow-amber-500/15 border-2 border-white/40 flex items-center justify-center mx-auto">
+            <div className="w-20 h-20 sm:w-24 sm:h-24 bg-black rounded-2xl p-1 shadow-2xl shadow-amber-500/10 border-2 border-white/20 flex items-center justify-center mx-auto">
               <img
                 src="/logo.png"
                 alt="ElectroReview PH Official Logo"
