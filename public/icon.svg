@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" fill="none">
+  <defs>
+    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0F172A" />
+      <stop offset="100%" stop-color="#090D16" />
+    </linearGradient>
+    <linearGradient id="bolt-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FDE047" />
+      <stop offset="50%" stop-color="#F59E0B" />
+      <stop offset="100%" stop-color="#D97706" />
+    </linearGradient>
+    <linearGradient id="border-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.8" />
+      <stop offset="50%" stop-color="#6366F1" stop-opacity="0.4" />
+      <stop offset="100%" stop-color="#3B82F6" stop-opacity="0.8" />
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="2" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Container Squircle Background -->
+  <rect x="2" y="2" width="60" height="60" rx="16" fill="url(#bg-grad)" stroke="url(#border-grad)" stroke-width="2.5" />
+
+  <!-- Circuit Trace Accents -->
+  <circle cx="16" cy="18" r="2" fill="#F59E0B" opacity="0.6" />
+  <line x1="16" y1="18" x2="22" y2="18" stroke="#F59E0B" stroke-width="1.2" opacity="0.4" />
+  
+  <circle cx="48" cy="46" r="2" fill="#6366F1" opacity="0.6" />
+  <line x1="42" y1="46" x2="48" y2="46" stroke="#6366F1" stroke-width="1.2" opacity="0.4" />
+
+  <!-- Electric Bolt with Glow -->
+  <path 
+    d="M34 8L18 34H31L26 56L46 28H33L38 8H34Z" 
+    fill="url(#bolt-grad)" 
+    filter="url(#glow)"
+  />
+  
+  <!-- Highlight facet -->
+  <path 
+    d="M34 8L24 28H33L26 56L34 32H27L38 8H34Z" 
+    fill="#FFFFFF" 
+    opacity="0.3"
+  />
+</svg>

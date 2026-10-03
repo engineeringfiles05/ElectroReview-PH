@@ -5,6 +5,13 @@ import 'katex/dist/katex.min.css'; // Mathematical rendering styles
 export const metadata: Metadata = {
   title: 'ElectroReview PH — Your Partner in REE & RME Board Exam Preparation',
   description: 'Your premier partner in REE & RME Board Exam Preparation. An intelligent review generator that automatically extracts questions, tables, and images from PDF and Word documents to create interactive licensure quizzes with step-by-step whiteboard derivations.',
+  icons: {
+    icon: [
+      { url: '/icon.svg', type: 'image/svg+xml' },
+    ],
+    shortcut: '/icon.svg',
+    apple: '/icon.svg',
+  },
   openGraph: {
     title: 'ElectroReview PH — Your Partner in REE & RME Board Exam Preparation',
     description: 'Your premier partner in REE & RME Board Exam Preparation. An intelligent review generator that automatically extracts questions, tables, and images from PDF and Word documents to create interactive licensure quizzes with step-by-step whiteboard derivations.',
