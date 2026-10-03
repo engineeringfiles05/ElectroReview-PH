@@ -53,7 +53,8 @@ import {
   ChevronDown,
   LogIn,
   LogOut,
-  User
+  User,
+  Lock
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { QuestionType, Question, Quiz, QuizAttempt, ExtractionLog, ScheduledQuiz, RevieweeUser } from '@/lib/types';
@@ -397,8 +398,10 @@ export default function BoardExamReviewPro() {
     setCurrentUser(user);
     setUserRole(user.role);
     safeLocalStorageSet('review_user_role', user.role);
+    safeLocalStorageSet('electroreview_user', JSON.stringify(user));
     setShowLoginModal(false);
-    showToast(`Welcome back, ${user.name}! Ready for REE & RME board practice.`, 'success');
+    setActiveMode('list');
+    showToast(`Welcome, ${user.name}! Ready for REE & RME board practice.`, 'success');
   };
 
   const handleLogout = () => {
@@ -2267,6 +2270,98 @@ export default function BoardExamReviewPro() {
     setMergeQuizPrompt(null);
     showToast(`Successfully merged all quizzes! Created "${title.trim()}" with ${mergedQuestions.length} total questions.`, 'success');
   };
+
+  // 1. Initial hydration splash screen while checking authentication session
+  if (!isMounted) {
+    return (
+      <div className="min-h-screen bg-[#0A0A0B] flex flex-col items-center justify-center p-6 text-center select-none font-sans">
+        <div className="w-16 h-16 bg-white rounded-2xl p-1.5 shadow-2xl border border-white/20 mb-4 flex items-center justify-center">
+          <img src="/logo.png" alt="ElectroReview PH" className="w-full h-full object-contain rounded-xl" />
+        </div>
+        <div className="flex items-center gap-2 text-amber-400 font-bold text-sm tracking-wider uppercase mb-1">
+          <Loader2 className="w-4 h-4 animate-spin text-amber-400" />
+          <span>Verifying Candidate Authentication...</span>
+        </div>
+        <p className="text-xs text-slate-500">PRC Registered Electrical Engineer &amp; Master Electrician Review Platform</p>
+      </div>
+    );
+  }
+
+  // 2. Mandatory Authentication Gate: Unauthenticated users MUST log in or register before accessing the site
+  if (!currentUser) {
+    return (
+      <div id="auth-gate-root" className="min-h-screen bg-[#0A0A0B] text-slate-300 flex flex-col font-sans selection:bg-amber-500/20 antialiased relative overflow-x-hidden">
+        {/* Top Minimal Branding Header */}
+        <header className="bg-[#0D0D10]/80 backdrop-blur-md border-b border-b-white/5 sticky top-0 z-40">
+          <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-12 h-16 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="relative w-9 h-9 rounded-xl overflow-hidden bg-white shadow-md border border-white/20 flex items-center justify-center p-0.5 shrink-0">
+                <img
+                  src="/logo.png"
+                  alt="ElectroReview PH"
+                  className="w-full h-full object-contain rounded-lg"
+                  referrerPolicy="no-referrer"
+                />
+              </div>
+              <div>
+                <h1 className="text-base font-bold tracking-tight text-white flex items-center gap-2">
+                  <span>ElectroReview PH</span>
+                  <span className="text-[10px] font-semibold uppercase text-amber-400 bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 rounded-full">
+                    REE &amp; RME
+                  </span>
+                </h1>
+                <p className="text-[11px] text-slate-400">Your Partner in REE &amp; RME Board Exam Preparation</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 text-xs font-semibold text-amber-300 bg-amber-500/10 border border-amber-500/30 px-3 py-1.5 rounded-xl">
+              <ShieldCheck className="w-4 h-4 text-amber-400" />
+              <span className="hidden sm:inline">Mandatory PRC Licensure Authentication</span>
+              <span className="sm:hidden">Portal Gate</span>
+            </div>
+          </div>
+        </header>
+
+        {/* Hero Gate Content */}
+        <main className="flex-grow flex flex-col items-center justify-center px-4 py-8 sm:py-12 relative z-10">
+          <div className="mb-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-semibold shadow-inner">
+            <Lock className="w-3.5 h-3.5 text-amber-400" />
+            <span>Authentication Required • Please Sign In or Create an Account to Proceed</span>
+          </div>
+
+          <div className="w-full max-w-xl">
+            <LoginSection
+              currentUser={null}
+              onLoginSuccess={handleLoginSuccess}
+              onLogout={handleLogout}
+              onNavigateToQuiz={() => {}}
+            />
+          </div>
+        </main>
+
+        {/* Footer */}
+        <footer className="bg-[#0B0B0C] border-t border-white/10 py-6 text-center text-xs text-slate-500">
+          <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-12 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <img
+                src="/logo.png"
+                alt="ElectroReview PH"
+                className="w-7 h-7 rounded-md object-contain bg-white p-0.5"
+                referrerPolicy="no-referrer"
+              />
+              <p>© 2026 ElectroReview PH — Your Partner in REE &amp; RME Board Exam Preparation • PRC Licensure Review Platform</p>
+            </div>
+            <div className="flex items-center gap-4">
+              <span className="flex items-center gap-1">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Full-Stack Encryption Active</span>
+              </span>
+            </div>
+          </div>
+        </footer>
+      </div>
+    );
+  }
 
   return (
     <div id="app-root" className="min-h-screen bg-[#0A0A0B] text-slate-300 flex flex-col font-sans selection:bg-indigo-900/40 antialiased">
