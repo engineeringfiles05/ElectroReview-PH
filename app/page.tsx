@@ -2237,8 +2237,13 @@ export default function BoardExamReviewPro() {
       <header id="app-header" className="bg-[#0D0D10]/80 backdrop-blur-md border-b border-b-white/5 sticky top-0 z-40 shadow-[0_4px_20px_rgba(0,0,0,0.3)]">
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-12 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-gradient-to-tr from-amber-500 to-indigo-600 rounded-lg text-white shadow-md shadow-amber-500/20">
-              <Zap className="w-5 h-5 animate-pulse text-amber-200 fill-amber-200" />
+            <div className="relative w-10 h-10 rounded-xl overflow-hidden bg-white shadow-md shadow-amber-500/10 border border-white/20 flex items-center justify-center p-0.5 shrink-0">
+              <img
+                src="/logo.png"
+                alt="ElectroReview PH Official Logo"
+                className="w-full h-full object-contain rounded-lg"
+                referrerPolicy="no-referrer"
+              />
             </div>
             <div>
               <h1 className="text-base sm:text-lg font-bold tracking-tight text-white flex items-center gap-2">
@@ -6980,7 +6985,15 @@ export default function BoardExamReviewPro() {
       {/* Footer */}
       <footer className="bg-[#0B0B0C] border-t border-white/10 mt-12 py-6 text-center text-xs text-slate-500">
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-12 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p>© 2026 ElectroReview PH — Your Partner in REE &amp; RME Board Exam Preparation • PRC Licensure Review Platform</p>
+          <div className="flex items-center gap-3">
+            <img
+              src="/logo.png"
+              alt="ElectroReview PH"
+              className="w-7 h-7 rounded-md object-contain bg-white p-0.5"
+              referrerPolicy="no-referrer"
+            />
+            <p>© 2026 ElectroReview PH — Your Partner in REE &amp; RME Board Exam Preparation • PRC Licensure Review Platform</p>
+          </div>
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />

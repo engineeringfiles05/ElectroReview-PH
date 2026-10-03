@@ -7,10 +7,11 @@ export const metadata: Metadata = {
   description: 'Your premier partner in REE & RME Board Exam Preparation. An intelligent review generator that automatically extracts questions, tables, and images from PDF and Word documents to create interactive licensure quizzes with step-by-step whiteboard derivations.',
   icons: {
     icon: [
-      { url: '/icon.svg', type: 'image/svg+xml' },
+      { url: '/favicon.ico', sizes: '32x32' },
+      { url: '/icon.png', type: 'image/png', sizes: '192x192' },
     ],
-    shortcut: '/icon.svg',
-    apple: '/icon.svg',
+    shortcut: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
   },
   openGraph: {
     title: 'ElectroReview PH — Your Partner in REE & RME Board Exam Preparation',
